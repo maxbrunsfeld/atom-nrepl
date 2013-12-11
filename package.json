@@ -1,10 +1,12 @@
 {
   "name": "nrepl",
   "main": "./lib/nrepl",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "description": "An nrepl client for clojure development in atom",
-  "activationEvents": ["nrepl:eval"],
+  "activationEvents": [
+    "nrepl:eval"
+  ],
   "repository": "https://github.com/atom/nrepl",
   "licenses": [
     {
