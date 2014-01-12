@@ -5,7 +5,7 @@ FakeNreplClient = require './helpers/fake-nrepl-client'
 Controller = require '../lib/controller'
 
 describe "nrepl", ->
-  [client, controller, workspaceView, view] = []
+  [client, directory, controller, workspaceView, editorView] = []
 
   beforeEach ->
     waitsFor (done) ->
@@ -13,8 +13,8 @@ describe "nrepl", ->
         client = new FakeNreplClient()
         directory = new Directory(path)
         workspaceView = new WorkspaceView
-        view = setUpActiveView(workspaceView)
-        view.insertText("""
+        editorView = setUpActiveEditorView(workspaceView)
+        editorView.insertText("""
           (ns the-first.namespace
             (require [some-library]))
           (the first expression)
@@ -24,45 +24,61 @@ describe "nrepl", ->
             (use [some-other-library]))
           (the third expression)
           """)
-
         controller = new Controller(client, workspaceView, directory)
         controller.start()
         done()
 
   describe "evaluating a selected expression", ->
-    beforeEach ->
-      spyOn(view, 'getSelectedBufferRange').andReturn(new Range([3, 0], [4, 0]))
-      workspaceView.trigger('nrepl:eval')
+    subject = ->
+      runs ->
+        spyOn(editorView, 'getSelectedBufferRange').andReturn(new Range([3, 0], [4, 0]))
+        workspaceView.trigger('nrepl:eval')
       waits 5
 
-    it "connects to the port specified in the port file", ->
-      expect(client.connectedPort).toBe(51234)
+    describe "when a REPL is running", ->
+      fakePort = 41235
 
-    describe "when the connection succeeds", ->
       beforeEach ->
-        client.simulateConnectionSucceeding()
+        waitsFor (done) ->
+          setUpFakePortFile(directory.path, fakePort, done)
+        subject()
 
-      it "displays the value of selected expression," +
-         "evaluated in the right namespace", ->
-        client.simulateEvaluationSucceeding(
-          """
-          (ns the-first.namespace)
-          (the second expression)\n
-          """,
-          ["nil", ":the-first-value"])
+      it "connects to the port specified in the port file", ->
+        expect(client.connectedPort).toBe(fakePort)
 
+      describe "when the connection succeeds", ->
+        beforeEach ->
+          client.simulateConnectionSucceeding()
+
+        it "displays the value of selected expression, evaluated in the right namespace", ->
+          client.simulateEvaluationSucceeding(
+            """
+            (ns the-first.namespace)
+            (the second expression)\n
+            """,
+            ["nil", ":the-first-value"])
+
+          outputView = workspaceView.find("#nrepl-output")
+          expect(outputView.eq(0).text()).toBe(":the-first-value")
+
+    describe "when no REPL is running", ->
+      beforeEach ->
+        subject()
+
+      it "displays an error message", ->
         outputView = workspaceView.find("#nrepl-output")
-        expect(outputView.eq(0).text()).toBe(":the-first-value")
+        expect(outputView.text()).toBe("Connection Error - Could not find nrepl port file.")
 
 # helpers
 
-setUpActiveView = (parent) ->
+setUpActiveEditorView = (parent) ->
   result = new EditorView(mini: true)
   spyOn(parent, 'getActiveView').andReturn(result)
   result
 
 setUpFakeProjectDir = (f) ->
-  temp.mkdir "atom-nrepl-test", (err, path) ->
+  temp.mkdir("atom-nrepl-test", (err, path) -> f(path))
+
+setUpFakePortFile = (path, port, f) ->
     fs.mkdir "#{path}/target", ->
-      fs.writeFile "#{path}/target/repl-port", "51234", ->
-        f(path)
+      fs.writeFile("#{path}/target/repl-port", port.toString(), f)

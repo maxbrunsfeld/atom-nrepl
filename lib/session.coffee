@@ -17,10 +17,16 @@ class Session
       fn()
     else
       getPort this, (port) =>
-        @client.connect(port, fn)
+        if port
+          @client.connect(port, fn)
+        else
+          error = new Error("Could not find nrepl port file.")
+          error.type = "Connection Error"
+          fn(error)
 
 getPort = (self, fn) ->
   portFilePath = path.join(self.directory.path, "target", "repl-port")
+
   fs.exists portFilePath, (result) ->
     if result
       fs.readFile portFilePath, (err, content) ->
