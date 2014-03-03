@@ -18,7 +18,7 @@
     "atom": ">0.39.0"
   },
   "dependencies": {
-    "nrepl.js": "*",
+    "nrepl.js": "0.0.1",
     "underscore": "1.5.x"
   },
   "devDependencies": {
