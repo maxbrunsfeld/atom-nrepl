@@ -1,4 +1,4 @@
-Copyright 2013 Whomever
+Copyright 2013 Max Brunsfeld
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

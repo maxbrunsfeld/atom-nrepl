@@ -1,4 +1,5 @@
-{WorkspaceView, EditorView, Directory, Range, Point} = require 'atom'
+{WorkspaceView, EditorView, Range, Point} = require 'atom'
+{Directory} = require 'pathwatcher'
 fs = require 'fs'
 temp = require 'temp'
 FakeNreplClient = require './helpers/fake-nrepl-client'
@@ -11,6 +12,9 @@ describe "nrepl", ->
     waitsFor (done) ->
       setUpFakeProjectDir (path) ->
         client = new FakeNreplClient()
+
+
+
         directory = new Directory(path)
         workspaceView = new WorkspaceView
         editorView = setUpActiveEditorView(workspaceView)
@@ -31,7 +35,7 @@ describe "nrepl", ->
   describe "evaluating a selected expression", ->
     subject = ->
       runs ->
-        spyOn(editorView, 'getSelectedBufferRange').andReturn(new Range([3, 0], [4, 0]))
+        spyOn(editorView.editor, 'getSelectedBufferRange').andReturn(new Range([3, 0], [4, 0]))
         workspaceView.trigger('nrepl:eval')
       waits 5
 
