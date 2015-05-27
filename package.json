@@ -3,9 +3,11 @@
   "main": "./lib/nrepl",
   "version": "0.0.6",
   "description": "An nrepl client for clojure development in atom",
-  "activationEvents": [
-    "nrepl:eval"
-  ],
+  "activationCommands": {
+    "atom-text-editor:not([mini])": [
+      "nrepl:eval"
+    ]
+  },
   "homepage": "https://github.com/maxbrunsfeld/atom-nrepl",
   "repository": "https://github.com/maxbrunsfeld/atom-nrepl",
   "licenses": [
@@ -18,6 +20,7 @@
     "atom": ">0.39.0"
   },
   "dependencies": {
+    "atom-space-pen-views": "^2.0.5",
     "nrepl.js": "0.0.1",
     "underscore": "1.5.x"
   },

@@ -25,7 +25,7 @@ class Session
           fn(error)
 
 getPort = (self, fn) ->
-  portFilePath = path.join(self.directory.path, ".nrepl-port")
+  portFilePath = path.join(self.directory.getPath(), ".nrepl-port")
 
   fs.exists portFilePath, (result) ->
     if result

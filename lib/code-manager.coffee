@@ -3,10 +3,10 @@ DEFAULT_NAMESPACE = "user"
 
 module.exports =
 class CodeManager
-  constructor: (@workspaceView) ->
+  constructor: (@workspace) ->
 
   currentExpressionWithNamespace: ->
-    editor = @workspaceView.getActiveView().editor
+    editor = @workspace.getActiveTextEditor()
     range = currentExpressionRange(editor)
     expression = expressionInRange(range, editor)
     namespace = namespaceForRange(range, editor)

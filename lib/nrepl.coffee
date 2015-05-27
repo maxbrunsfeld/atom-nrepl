@@ -7,12 +7,9 @@ module.exports =
   activate: (state) ->
     @controller = new Controller(
       new Client(),
-      atom.workspaceView,
-      atom.project.getRootDirectory())
+      atom.workspace,
+      atom.project.getDirectories()[0])
     @controller.start()
 
   deactivate: ->
     @controller.stop()
-
-  serialize: ->
-    {}
