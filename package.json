@@ -1,7 +1,7 @@
 {
   "name": "nrepl",
   "main": "./lib/nrepl",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "An nrepl client for clojure development in atom",
   "activationCommands": {
     "atom-text-editor:not([mini])": [
