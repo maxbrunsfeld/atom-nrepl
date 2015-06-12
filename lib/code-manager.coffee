@@ -1,5 +1,7 @@
 _ = require 'underscore'
+
 DEFAULT_NAMESPACE = "user"
+NAMESPACE_REGEX = /\(ns\s+([\w\.-]+)/g
 
 module.exports =
 class CodeManager
@@ -13,10 +15,11 @@ class CodeManager
     [namespaceCall(namespace), expression].join("\n")
 
 namespaceForRange = (range, editor) ->
-  buffer = editor.getBuffer();
-  charIndex = buffer.characterIndexForPosition(range.start)
-  matches = buffer.matchesInCharacterRange(/\(ns\s+([\w\.-]+)/g, 0, charIndex)
-  _.last(matches)?[1] or DEFAULT_NAMESPACE
+  precedingNamespace = null
+  editor.backwardsScanInBufferRange NAMESPACE_REGEX, [[0, 0], range.start], ({match, stop}) ->
+    precedingNamespace = match[1]
+    stop()
+  precedingNamespace ? DEFAULT_NAMESPACE
 
 currentExpressionRange = (editor) ->
   editor.getSelectedBufferRange()
