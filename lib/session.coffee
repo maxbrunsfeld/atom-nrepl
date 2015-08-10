@@ -16,7 +16,7 @@ class Session
     if @client.isConnected()
       fn()
     else
-      currentFile = atom.workspace.getActiveTextEditor().buffer.file.path
+      currentFile = atom.workspace.getActiveTextEditor().getPath()
       getParentDir currentFile, (path) =>
         getPort path, (port) =>
           if port
